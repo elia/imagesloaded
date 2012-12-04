@@ -12,13 +12,14 @@
 'use strict';
 
 // blank image data-uri bypasses webkit log warning (thx doug jones)
-var BLANK = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==';
+$.imagesLoaded.BLANK = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==';
 
 $.fn.imagesLoaded = function( callback ) {
 	var $this = this,
 		deferred = $.isFunction($.Deferred) ? $.Deferred() : 0,
 		hasNotify = $.isFunction(deferred.notify),
 		$images = $this.find('img').add( $this.filter('img') ),
+		blank = $.imagesLoaded.BLANK,
 		loaded = [],
 		proper = [],
 		broken = [];
@@ -28,6 +29,8 @@ $.fn.imagesLoaded = function( callback ) {
 		$.each(callback, function (key, value) {
 			if (key === 'callback') {
 				callback = value;
+			if (key === 'blank') {
+				blank = value;
 			} else if (deferred) {
 				deferred[key](value);
 			}
@@ -52,8 +55,8 @@ $.fn.imagesLoaded = function( callback ) {
 	}
 
 	function imgLoaded( img, isBroken ) {
-		// don't proceed if BLANK image, or image is already loaded
-		if ( img.src === BLANK || $.inArray( img, loaded ) !== -1 ) {
+		// don't proceed if blank image, or image is already loaded
+		if ( img.src === blank || $.inArray( img, loaded ) !== -1 ) {
 			return;
 		}
 
@@ -111,7 +114,7 @@ $.fn.imagesLoaded = function( callback ) {
 			// dealing with IE, or image is complete (loaded) and failed manual check
 			// webkit hack from http://groups.google.com/group/jquery-dev/browse_thread/thread/eee6ab7b2da50e1f
 			if ( el.readyState || el.complete ) {
-				el.src = BLANK;
+				el.src = blank;
 				el.src = src;
 			}
 		});
